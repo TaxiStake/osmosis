@@ -43,7 +43,7 @@ func (suite *KeeperTestSuite) SetupMultipleValidators(numValidator int) []string
 	return valAddrs
 }
 
-func (suite *KeeperTestSuite) PrepareStakeToValidatorSet() []types.ValidatorPreference {
+func (suite *KeeperTestSuite) PrepareDelegateToValidatorSet() []types.ValidatorPreference {
 	valAddrs := suite.SetupMultipleValidators(3)
 	valPreferences := []types.ValidatorPreference{
 		{

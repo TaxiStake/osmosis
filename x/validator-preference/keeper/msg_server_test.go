@@ -44,30 +44,30 @@ func (suite *KeeperTestSuite) TestSetValidatorSetPreference() {
 			expectPass: true,
 		},
 		{
-			name: "create another validator set by the same user",
+			name: "Update existing validator set",
 			param: param{
 				delegator: sdk.AccAddress([]byte("addr1---------------")),
 				preferences: []types.ValidatorPreference{
 					{
 						ValOperAddress: valAddrs[0],
-						Weight:         sdk.NewDecWithPrec(5, 1),
+						Weight:         sdk.NewDecWithPrec(2, 1),
 					},
 					{
 						ValOperAddress: valAddrs[1],
-						Weight:         sdk.NewDecWithPrec(3, 1),
+						Weight:         sdk.NewDecWithPrec(2, 1),
 					},
 					{
 						ValOperAddress: valAddrs[2],
-						Weight:         sdk.NewDecWithPrec(2, 1),
+						Weight:         sdk.NewDecWithPrec(6, 1),
 					},
 				},
 			},
-			expectPass: false,
+			expectPass: true,
 		},
 		{
 			name: "create validator set with unknown validator address",
 			param: param{
-				delegator: sdk.AccAddress([]byte("addr1---------------")),
+				delegator: sdk.AccAddress([]byte("addr2---------------")),
 				preferences: []types.ValidatorPreference{
 					{
 						ValOperAddress: "addr1---------------",
@@ -84,7 +84,7 @@ func (suite *KeeperTestSuite) TestSetValidatorSetPreference() {
 		{
 			name: "create validator set with weights != 1",
 			param: param{
-				delegator: sdk.AccAddress([]byte("addr1---------------")),
+				delegator: sdk.AccAddress([]byte("addr3---------------")),
 				preferences: []types.ValidatorPreference{
 					{
 						ValOperAddress: valAddrs[0],

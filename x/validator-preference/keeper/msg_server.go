@@ -2,10 +2,8 @@ package keeper
 
 import (
 	"context"
-	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/osmosis-labs/osmosis/v12/x/validator-preference/types"
 )
 
@@ -26,25 +24,21 @@ var _ types.MsgServer = msgServer{}
 func (server msgServer) SetValidatorSetPreference(goCtx context.Context, msg *types.MsgSetValidatorSetPreference) (*types.MsgSetValidatorSetPreferenceResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// check if a user already have a validator-set created
-	_, found := server.keeper.GetValidatorSetPreference(ctx, msg.Delegator)
-	if found {
-		// TODO;
-		// user already has a validator set and is currently delegating, so run the following logic:
-		// 0. get the amount of tokens per validator the user has delegated
-		// 1. undelegate all the tokens the user has staked
-		// 2. update the {val, weights} list and compute the new tokenAmt
-		// 3. delegate the (tokens with updated {val, weights}
+	preferences := msg.Preferences
 
-		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, fmt.Sprintf("user %s already has a validator set", msg.Delegator))
+	// check if a user already have a validator-set created
+	existingValidator, found := server.keeper.GetValidatorSetPreference(ctx, msg.Delegator)
+	if found {
+		preferences = existingValidator.Preferences
 	}
 
-	// check if the distribution weights equals 1.
-	err := server.keeper.ValidatePreferences(ctx, msg.Preferences)
+	// check if the distribution weights equals 1
+	err := server.keeper.ValidatePreferences(ctx, preferences)
 	if err != nil {
 		return nil, err
 	}
 
+	// update the validator-set based on what user provides
 	setMsg := types.ValidatorSetPreferences{
 		Preferences: msg.Preferences,
 	}
@@ -62,5 +56,5 @@ func (server msgServer) UndelegateFromValidatorSet(goCtx context.Context, msg *t
 }
 
 func (server msgServer) WithdrawDelegationRewards(goCtx context.Context, msg *types.MsgWithdrawDelegationRewards) (*types.MsgWithdrawDelegationRewardsResponse, error) {
-	return nil, nil
+	return &types.MsgWithdrawDelegationRewardsResponse{}, nil
 }
